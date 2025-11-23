@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>sound-diary</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    
+    <link rel="icon" href="favicon.ico">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon16.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon32.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="assets/favicons/apple.png">
+    
+    <link href="https://fonts.googleapis.com/css2?family=Literata:ital,opsz,wght@0,7..72,200..900;1,7..72,200..900&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Literata', serif;
+            background-color: #ffffff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            overflow: hidden;
+            position: fixed;
+        }
+
+        .main-container {
+            width: 1280px;
+            height: 832px;
+            background-color: #FFFFFF;
+            overflow: hidden;
+        }
+
+        .about-text {
+        
+            position: absolute;
+            left: 90%;
+            top: 34px;
+            width: 254px;
+            height: 84px;
+            font-size: 10px;
+            line-height: 15px;
+            font-weight: 400;
+            color: #000000;
+            text-align: justify;
+            cursor: pointer;
+            transition: color 0.3s ease;
+        }
+
+        .about-text:hover {
+            color: #555;
+        }
+
+        .listen-text {
+            position: absolute;
+            left: 563px;
+            top: 420px;
+            width: 127px;
+            height: 39px;
+            font-size: 11px;
+            line-height: 21px;
+            font-weight: 400;
+            color: #000000;
+            cursor: pointer;
+            transition: color 0.3s ease;
+        }
+
+        .listen-text:hover {
+            color: #555;
+        }
+
+        .title-text {
+            position: absolute;
+            left: 752px;
+            top: 407px;
+            width: 220px;
+            height: 39px;
+            font-size: 14px;
+            line-height: 21px;
+            font-weight: 400;
+            color: #000000;
+        }
+
+        .main-text {
+            position: absolute;
+            left: 683px;
+            top: 459px;
+            width: 311px;
+            height: 205px;
+            font-size: 12px;
+            line-height: 18px;
+            font-weight: 400;
+            color: #000000;
+            text-align: justify;
+        }
+
+        .graphic-element {
+            position: absolute;
+            left: 32.19%;
+            right: 47%;
+            top: 40%;
+            bottom: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            opacity: 0.8;
+            transition: 1s ease;
+
+        }
+
+        .graphic-element:hover {
+            opacity: 0%;
+        }
+
+        .control-panel {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 1rem;
+            z-index: 10;
+        }
+
+        .control-icons {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            align-items: flex-end;
+            font-size: 0.7rem;
+            line-height: 1.82rem;
+        }
+
+        .coordinate-text {
+            font-family: 'Literata', serif;
+            font-size: 0.8rem;
+            text-align: right;
+            color: #000000;
+            line-height: 1.3;
+        }
+
+
+/* Добавьте эти медиа-запросы в конец секции style */
+
+        /* Для планшетов и небольших экранов */
+        @media (max-width: 1366px) {
+            .main-container {
+                width: 90vw;
+                height: 90vh;
+                max-width: 1280px;
+                max-height: 832px;
+            }
+            
+            .about-text {
+                left: calc(100% - 280px);
+                width: 240px;
+                font-size: 9px;
+                line-height: 13px;
+            }
+            
+            .listen-text {
+                left: 40%;
+                top: 50.5%;
+            }
+            
+            .title-text {
+                left: 58.8%;
+                top: 45%;
+            }
+            
+            .main-text {
+                left: 53.4%;
+                top: 55.2%;
+                width: 280px;
+                font-size: 11px;
+                line-height: 16px;
+            }
+            
+            .graphic-element {
+                left: 32%;
+                right: 47%;
+                top: 40%;
+            }
+        }
+
+        /* Для мобильных устройств */
+        @media (max-width: 768px) {
+            body {
+                position: relative;
+                overflow: auto;
+            }
+            
+            .main-container {
+                width: 100vw;
+                height: auto;
+                min-height: 100vh;
+                position: relative;
+                padding: 20px;
+            }
+            
+            .about-text {
+                position: relative;
+                left: auto;
+                top: auto;
+                width: 100%;
+                max-width: 254px;
+                margin: 20px auto;
+                font-size: 10px;
+                line-height: 15px;
+                text-align: left;
+            }
+            
+            .listen-text {
+                position: relative;
+                left: auto;
+                top: auto;
+                margin: 30px auto;
+                text-align: center;
+            }
+            
+            .title-text {
+                position: relative;
+                left: auto;
+                top: auto;
+                width: 100%;
+                max-width: 220px;
+                margin: 20px auto;
+                text-align: center;
+            }
+            
+            .main-text {
+                position: relative;
+                left: auto;
+                top: auto;
+                width: 100%;
+                max-width: 311px;
+                margin: 20px auto;
+                font-size: 12px;
+                line-height: 18px;
+            }
+            
+            .graphic-element {
+                position: relative;
+                left: auto;
+                right: auto;
+                top: auto;
+                bottom: auto;
+                width: 200px;
+                margin: 40px auto;
+                opacity: 0.6;
+            }
+            
+            .graphic-element img {
+                width: 100%;
+                height: auto;
+            }
+        }
+
+        /* Для очень маленьких экранов */
+        @media (max-width: 480px) {
+            .about-text {
+                font-size: 9px;
+                line-height: 13px;
+            }
+            
+            .listen-text,
+            .title-text {
+                font-size: 12px;
+                line-height: 18px;
+            }
+            
+            .main-text {
+                font-size: 11px;
+                line-height: 16px;
+            }
+            
+            .graphic-element {
+                width: 150px;
+            }
+        }
+
+        /* Дополнительные улучшения для адаптивности */
+        @media (max-height: 900px) {
+            .main-container {
+                height: 95vh;
+            }
+        }
+
+        /* Обеспечиваем масштабирование графического элемента */
+        .graphic-element img {
+            max-width: 100%;
+            height: auto;
+        }            
+
+
+    
+    </style>
+</head>
+<body>
+    <div class="main-container">
+        
+        <div class="about-text" onclick="navigateToPage('info.html')">
+            Как обучение искусству слушать меняет наше представление о мире? или, другими словами: что звук, именно как звук, вносит в процесс человеческого познания?
+        </div>
+
+       
+        <div class="listen-text" onclick="navigateToPage('map.html')">
+            ВСЛУШАТЬСЯ ⇨
+        </div>
+
+        <div class="title-text">
+            ЗВУКОВОЙ ДНЕВНИК: КАРТОГРАФИЯ НЕВИДИМОГО
+        </div>
+
+ 
+        <div class="main-text">
+            Исследовательский проект, где пространство существует только как акустический ландшафт. В полной визуальной тишине вы прокладываете маршруты по звуковым ориентирам, рисуя свою траекторию слушания.
+            <br><br>
+            Тишина открывает нам горизонт мира, которому мы уже принадлежим. Только из молчаливых попыток вслушивания в безмолвие и рождаются для нас все звуки. 
+        </div>
+
+   
+        <div class="graphic-element">
+            <img src="assets/images/lines.png" alt="Графический элемент" />
+        </div>
+    </div>
+
+    <div class="control-panel">
+            <div class="control-icons">
+                <div class="coordinate-text"> &copy; 2025</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function navigateToPage(page) {
+            window.location.href = page;
+        }
+    </script>
+</body>
+</html>
+

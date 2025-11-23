@@ -1,0 +1,902 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=0.8">
+    <title>map</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Literata:ital,opsz,wght@0,7..72,200..900;1,7..72,200..900&family=Crimson+Text:ital,wght@0,400;0,600;1,400;1,600&display=swap" rel="stylesheet">
+    
+    <link rel="icon" href="favicon.ico">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon16.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon32.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="assets/favicons/apple.png">
+    
+    <style>
+        /* === БАЗОВЫЕ СТИЛИ === */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+
+        body {
+            margin-top: 2%;
+            font-family: 'Literata', serif;
+            background-color: #ffffff;
+            color: #000000;
+            line-height: 1.4;
+            padding: 1rem;
+            transform: scale(0.9);
+            transform-origin: top center;
+            width: 100vw;
+            min-height: 100vh;
+        }
+
+        
+
+        .container {
+            max-width: 70%;
+            margin: 0 auto;
+            background-color: #ffffff;
+            margin-bottom: 3%;
+        }
+        
+
+        /* === НАВИГАЦИЯ === */
+        .navigation {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            padding: 0 0rem;
+            
+        }
+
+        .nav-back {
+            font-size: 1rem;
+            font-weight: 400;
+            cursor: pointer;
+            transition: opacity 0.3s ease;
+        }
+
+        .nav-back:hover {
+            opacity: 0.7;
+        }
+
+        .nav-title {
+            font-size: 0.8rem;
+            font-weight: 400;
+            letter-spacing: 0.1em;
+            
+        }
+
+        .nav-about {
+            font-size: 0.8rem;
+            font-weight: 400;
+            letter-spacing: 0.05em;
+            transition: opacity 0.3s ease;
+            cursor: pointer;
+        }
+
+        .nav-about:hover {
+            opacity: 0.7;
+        }
+        
+
+        /* === ОСНОВНАЯ КАРТА === */
+        .map-container {
+            border: 1.5px solid #000000;
+            margin-bottom: 8rem;
+            position: relative;
+            aspect-ratio: 16/10;
+            min-height: 400px;
+        }
+        
+        .map-rectangle{
+            /* Rectangle 2 */
+            position: absolute;
+            width: 95px;
+            height: 5px;
+        
+            left: 75px;
+            top: 610px;
+
+            background: #FFFFFF;
+
+        }
+
+        .map-grid {
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            grid-template-rows: repeat(4, 1fr);
+            height: 100%;
+            padding: 1rem;
+            gap: 8rem;
+            position: relative;
+        }
+
+        .map-number {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1rem;
+            font-weight: 400;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 40px;
+            height: 40px;
+            border-radius: 4px;
+            background-color: transparent;
+            color: #000000;
+            border: 1px solid transparent;
+            position: relative;
+            z-index: 10;
+        }
+
+        .map-number:hover {
+            background-color: #f5f5f5;
+            border-radius: 4px;
+        }
+/* 
+        .map-number.active {
+            background-color: #000000;
+            color: #ffffff;
+            
+        } */
+
+        /* Позиционирование цифр согласно макету */
+        .number-1 { grid-column: 1; grid-row: 3; }
+        .number-2 { grid-column: 2; grid-row: 3; }
+        .number-3 { grid-column: 1; grid-row: 1; }
+        .number-4 { grid-column: 2; grid-row: 1; }
+        .number-5 { grid-column: 6; grid-row: 2; }
+        .number-6 { grid-column: 6; grid-row: 3; }
+        .number-7 { grid-column: 6; grid-row: 4; }
+        .number-8 { grid-column: 5; grid-row: 4; }
+        .number-9 { grid-column: 4; grid-row: 4; }
+        .number-10 { grid-column: 3; grid-row: 4; }
+        .number-11 { grid-column: 2; grid-row: 4; }
+        .number-12 { grid-column: 1; grid-row: 4; }
+
+        /* Стили для линий соединения */
+        .connection-line {
+            position: absolute;
+            background-color: #000000;
+            height: 1px;
+            transform-origin: 0 0;
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        /* === ОПИСАНИЯ РАБОТ === */
+        .descriptions {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 3rem;
+            padding: 0 0rem;
+        }
+
+        .description-column {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .description-item {
+            display: flex;
+            gap: 1rem;
+            align-items: flex-start;
+        }
+
+        .description-number {
+            font-family: 'Literata', serif;
+            font-size: 1rem;
+            font-weight: 400;
+            min-width: 1.5rem;
+            flex-shrink: 0;
+        }
+
+        .description-content {
+            flex: 1;
+        }
+
+        .description-title {
+            font-family: 'Crimson Text', serif;
+            font-style: italic;
+            font-size: 1.1rem;
+            font-weight: 400;
+            margin-bottom: 0.25rem;
+            line-height: 1.3;
+        }
+
+        .description-details {
+            font-family: 'Literata', serif;
+            font-size: 0.8rem;
+            font-weight: 400;
+            line-height: 1.7;
+            color: #000000;
+        }
+
+        /* === АДАПТИВНЫЕ СТИЛИ ДЛЯ РАЗНЫХ УСТРОЙСТВ === */
+
+        /* Большие планшеты и маленькие ноутбуки (1024px - 1366px) */
+        @media screen and (max-width: 1366px) {
+            .container {
+                max-width: 85%;
+            }
+            
+            .map-grid {
+                gap: 6rem;
+            }
+            
+            .map-number {
+                width: 36px;
+                height: 36px;
+                font-size: 0.9rem;
+            }
+            
+            .descriptions {
+                gap: 2.5rem;
+                padding: 0 1.5rem;
+            }
+            
+            .description-title {
+                font-size: 1rem;
+            }
+            
+            .description-details {
+                font-size: 0.7rem;
+            }
+        }
+
+        /* Планшеты (768px - 1024px) */
+        @media screen and (max-width: 1024px) {
+            .container {
+                max-width: 90%;
+            }
+            
+            .map-container {
+                margin-bottom: 5rem;
+                min-height: 350px;
+            }
+            
+            .map-grid {
+                gap: 4rem;
+                padding: 0.8rem;
+            }
+            
+            .map-number {
+                width: 32px;
+                height: 32px;
+                font-size: 0.85rem;
+            }
+            
+            .descriptions {
+                grid-template-columns: 1fr;
+                gap: 2rem;
+                padding: 0 1rem;
+            }
+            
+            .description-column {
+                gap: 1.25rem;
+            }
+            
+            .description-item {
+                gap: 0.8rem;
+            }
+            
+            .nav-title,
+            .nav-about {
+                font-size: 0.75rem;
+            }
+        }
+
+        /* Большие мобильные и маленькие планшеты (601px - 768px) */
+        @media screen and (max-width: 768px) {
+            body {
+                padding: 0.5rem;
+            }
+            
+            .container {
+                max-width: 95%;
+                margin-bottom: 2%;
+            }
+            
+            .map-container {
+                margin-bottom: 4rem;
+                min-height: 300px;
+                aspect-ratio: 16/9;
+            }
+            
+            .map-grid {
+                gap: 3rem;
+                padding: 0.6rem;
+            }
+            
+            .map-number {
+                width: 28px;
+                height: 28px;
+                font-size: 0.8rem;
+            }
+            
+            .descriptions {
+                gap: 1.5rem;
+                padding: 0;
+            }
+            
+            .description-column {
+                gap: 1rem;
+            }
+            
+            .description-item {
+                gap: 0.6rem;
+            }
+            
+            .description-title {
+                font-size: 0.95rem;
+            }
+            
+            .description-details {
+                font-size: 0.65rem;
+            }
+            
+            .navigation {
+                margin-bottom: 1rem;
+            }
+        }
+
+        /* Мобильные устройства (480px - 600px) */
+        @media screen and (max-width: 600px) {
+            .container {
+                max-width: 100%;
+            }
+            
+            .map-container {
+                margin-bottom: 3rem;
+                min-height: 250px;
+                aspect-ratio: 4/3;
+            }
+            
+            .map-grid {
+                gap: 2rem;
+                padding: 0.5rem;
+            }
+            
+            .map-number {
+                width: 24px;
+                height: 24px;
+                font-size: 0.75rem;
+            }
+            
+            .descriptions {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+            
+            .description-column {
+                gap: 0.8rem;
+            }
+            
+            .description-item {
+                gap: 0.5rem;
+            }
+            
+            .description-number {
+                font-size: 0.9rem;
+                min-width: 1.2rem;
+            }
+            
+            .description-title {
+                font-size: 0.9rem;
+            }
+            
+            .description-details {
+                font-size: 0.6rem;
+            }
+            
+            .nav-back {
+                font-size: 0.9rem;
+            }
+            
+            .nav-title,
+            .nav-about {
+                font-size: 0.7rem;
+            }
+        }
+
+        /* Маленькие мобильные устройства (320px - 480px) */
+        @media screen and (max-width: 480px) {
+            body {
+                padding: 0.25rem;
+            }
+            
+            .map-container {
+                margin-bottom: 2.5rem;
+                min-height: 200px;
+                aspect-ratio: 1/1;
+            }
+            
+            .map-grid {
+                gap: 1.5rem;
+                padding: 0.4rem;
+            }
+            
+            .map-number {
+                width: 20px;
+                height: 20px;
+                font-size: 0.7rem;
+            }
+            
+            .description-column {
+                gap: 0.6rem;
+            }
+            
+            .description-item {
+                gap: 0.4rem;
+            }
+            
+            .description-number {
+                font-size: 0.8rem;
+                min-width: 1rem;
+            }
+            
+            .description-title {
+                font-size: 0.85rem;
+                margin-bottom: 0.1rem;
+            }
+            
+            .description-details {
+                font-size: 0.55rem;
+                line-height: 1.3;
+            }
+            
+            .navigation {
+                flex-direction: column;
+                gap: 0.5rem;
+                align-items: flex-start;
+            }
+            
+            .nav-back {
+                order: 1;
+            }
+            
+            .nav-about {
+                order: 2;
+            }
+        }
+
+        /* Очень маленькие мобильные устройства (до 320px) */
+        @media screen and (max-width: 320px) {
+            .map-container {
+                min-height: 180px;
+            }
+            
+            .map-grid {
+                gap: 1rem;
+                padding: 0.3rem;
+            }
+            
+            .map-number {
+                width: 18px;
+                height: 18px;
+                font-size: 0.65rem;
+            }
+            
+            .description-title {
+                font-size: 0.8rem;
+            }
+            
+            .description-details {
+                font-size: 0.5rem;
+            }
+        }
+
+        /* Альбомная ориентация на мобильных */
+        @media screen and (max-width: 900px) and (orientation: landscape) {
+            .map-container {
+                aspect-ratio: 16/7;
+                min-height: 200px;
+                margin-bottom: 2rem;
+            }
+            
+            .map-grid {
+                gap: 2rem;
+            }
+            
+            .descriptions {
+                grid-template-columns: 1fr 1fr;
+                gap: 1rem;
+            }
+            
+            .container {
+                max-width: 95%;
+            }
+            
+        }
+
+        /* Большие экраны (1920px+) */
+        @media screen and (min-width: 1920px) {
+            .container {
+                max-width: 1200px;
+            }
+            
+            .map-container {
+                min-height: 500px;
+            }
+            
+            .map-grid {
+                gap: 10rem;
+            }
+            
+            .map-number {
+                width: 45px;
+                height: 45px;
+                font-size: 1.1rem;
+            }
+            
+            .descriptions {
+                gap: 4rem;
+                padding: 0 3rem;
+            }
+            
+            .description-column {
+                gap: 2rem;
+            }
+            
+            .description-title {
+                font-size: 1.2rem;
+            }
+            
+            .description-details {
+                font-size: 0.9rem;
+            }
+        }
+
+        /* Обеспечиваем, что все map-number остаются внутри контейнера */
+        .map-container {
+            overflow: hidden;
+        }
+
+        /* Улучшения для touch-устройств */
+        @media (pointer: coarse) {
+            .map-number {
+                min-width: 44px;
+                min-height: 44px;
+            }
+            
+            .nav-back,
+            .nav-about {
+                padding: 0.5rem;
+                min-height: 44px;
+                display: flex;
+                align-items: center;
+            }
+        }
+
+        /* Сохранение пропорций grid при очень маленьких экранах */
+        @media screen and (max-width: 380px) {
+            .map-grid {
+                grid-template-columns: repeat(6, 1fr);
+                grid-template-rows: repeat(4, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Навигация -->
+        <nav class="navigation">
+            <div class="nav-back" onclick="navigateToPage('index.html')">⇦</div>
+            <div class="nav-about" onclick="navigateToPage('info.html')">О ПРОЕКТЕ</div>
+        </nav>
+
+        <!-- Основная карта с цифрами -->
+        <div class="map-container">
+            <div class="map-rectangle"></div>
+            <div class="map-grid">
+                <div class="map-number number-1" onclick="handleNumberClick(1)">1</div>
+                <div class="map-number number-2" onclick="handleNumberClick(2)">2</div>
+                <div class="map-number number-3" onclick="handleNumberClick(3)">3</div>
+                <div class="map-number number-4" onclick="handleNumberClick(4)">4</div>
+                <div class="map-number number-5" onclick="handleNumberClick(5)">5</div>
+                <div class="map-number number-6" onclick="handleNumberClick(6)">6</div>
+                <div class="map-number number-7" onclick="handleNumberClick(7)">7</div>
+                <div class="map-number number-8" onclick="handleNumberClick(8)">8</div>
+                <div class="map-number number-9" onclick="handleNumberClick(9)">9</div>
+                <div class="map-number number-10" onclick="handleNumberClick(10)">10</div>
+                <div class="map-number number-11" onclick="handleNumberClick(11)">11</div>
+                <div class="map-number number-12" onclick="handleNumberClick(12)">12</div>
+            </div>
+        </div>
+
+        <!-- Описания работ -->
+        <div class="descriptions">
+            <!-- Левая колонка -->
+            <div class="description-column">
+                <div class="description-item">
+                    <div class="description-number">1</div>
+                    <div class="description-content">
+                        <div class="description-title">Field Recording</div>
+                        <div class="description-details">City as a score<br>Various Artists 
+</div>
+                    </div>
+                </div>
+
+                <div class="description-item">
+                    <div class="description-number">2</div>
+                    <div class="description-content">
+                        <div class="description-title">Field Notes / Landscapes (Nature)</div>
+                        <div class="description-details">Auditory diary of wild nature<br>Various Artists</div>
+                    </div>
+                </div>
+
+
+                <div class="description-item">
+                    <div class="description-number">3</div>
+                    <div class="description-content">
+                        <div class="description-title">Sound of the Earth vol.8 </div>
+                        <div class="description-details">2020<br>Takashi Kokubo</div>
+                    </div>
+                </div>
+
+                <div class="description-item">
+                    <div class="description-number">4</div>
+                    <div class="description-content">
+                        <div class="description-title"> Plant Music, Vol. 1, Mushrooms</div>
+                        <div class="description-details">2021-25<br>Modern Biology</div>
+                    </div>
+                </div>
+
+                <div class="description-item">
+                    <div class="description-number">5</div>
+                    <div class="description-content">
+                        <div class="description-title">Underwater Cairngorms</div>
+                        <div class="description-details">2025<br>David de la Haye</div>
+                        
+                    </div>
+                </div> 
+                <div class="description-item">
+                    <div class="description-number">6</div>
+                    <div class="description-content">
+                        <div class="description-title">Long Whale Song</div>
+                        <div class="description-details">2019<br>SymphoCat</div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Правая колонка -->
+            <div class="description-column">
+                
+                <div class="description-item">
+                    <div class="description-number">7</div>
+                    <div class="description-content">
+                        <div class="description-title">Distant Objects In Soft Focus</div>
+                        <div class="description-details">2024<br>theAdelaidean</div>
+                        <!-- <div class="description-title">92982</div>
+                        <div class="description-details">2009<br>Willian Basinski</div> -->
+                    </div>
+                </div>
+
+                <div class="description-item">
+                    <div class="description-number">8</div>
+                    <div class="description-content">
+                        <div class="description-title">Selva Oscura</div>
+                        <div class="description-details">2018<br>William Basinski + Lawrence</div> 
+
+                    </div>
+                </div>
+
+                <div class="description-item">
+                    <div class="description-number">9</div>
+                    <div class="description-content">
+                        <div class="description-title">Sinemis</div>
+                        <div class="description-details">2022<br>Dua</div> 
+                    </div>
+                </div>
+
+                <div class="description-item">
+                    <div class="description-number">10</div>
+                    <div class="description-content">
+                        <div class="description-title">Ambient 3: Day of Radiance</div>
+                            <div class="description-details">2015<br>Laraaji, Brian Eno</div>
+                    </div>
+                </div>
+
+                <div class="description-item">
+                    <div class="description-number">11</div>
+                    <div class="description-content">
+                        <div class="description-title">Space Sounds & Chorals</div>
+                        <div class="description-details">Sounds of the Universe <br>Various Artists </div>
+                    </div>
+                </div>
+                <div class="description-item">
+                    <div class="description-number">12</div>
+                    <div class="description-content">
+                        <div class="description-title">Memory & Quiet Voices</div>
+                        <div class="description-details">2024-25<br>Personal Collection</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function navigateToPage(page) {
+            window.location.href = page;
+        }
+
+                        // Перерисовка линий при изменении размера окна
+        window.addEventListener('resize', function() {
+            // Сохраняем текущие соединения
+            const currentConnections = [];
+            let tempPrevious = previousNumber;
+            let tempCurrent = null;
+            
+            // Восстанавливаем соединения на основе previousNumber
+            if (previousNumber !== null) {
+                // Очищаем линии
+                connectionLines.forEach(line => {
+                    if (line.parentNode) {
+                        line.parentNode.removeChild(line);
+                    }
+                });
+                connectionLines = [];
+                
+                // Восстанавливаем соединения
+                document.querySelectorAll('.map-number').forEach(el => {
+                    if (el.classList.contains('active')) {
+                        tempCurrent = parseInt(el.textContent);
+                        if (tempPrevious && tempCurrent && tempPrevious !== tempCurrent) {
+                            createConnectionLine(tempPrevious, tempCurrent);
+                            tempPrevious = tempCurrent;
+                        }
+                    }
+                });
+            }
+        });
+
+        // Переменные для логики соединения треков
+        let currentAudio = null;
+        let activeNumber = null;
+        let clickCount = {};
+        let previousNumber = null;
+        let connectionLines = [];
+
+        function handleNumberClick(number) {
+            // Обработка кликов для аудио
+            if (!clickCount[number]) {
+                clickCount[number] = 0;
+            }
+            clickCount[number]++;
+            
+            document.querySelectorAll('.map-number').forEach(el => {
+                el.classList.remove('active');
+            });
+            
+            const currentElement = document.querySelector(`.number-${number}`);
+            currentElement.classList.add('active');
+            
+            if (clickCount[number] === 1) {
+                playAudio(number);
+                setTimeout(() => {
+                    if (clickCount[number] === 1) {
+                        clickCount[number] = 0;
+                    }
+                }, 2000);
+            } else if (clickCount[number] === 2) {
+                stopAudio();
+                navigateToAudioPage(number);
+                clickCount[number] = 0;
+            }
+
+            // Логика соединения треков линиями
+            if (previousNumber === null) {
+                // Первый клик - просто запоминаем номер
+                previousNumber = number;
+            } else {
+                // Второй и последующие клики - создаем линию
+                createConnectionLine(previousNumber, number);
+                
+                // Снимаем выделения
+                document.querySelectorAll('.map-number').forEach(el => {
+                    el.classList.remove('active');
+                });
+                
+                // Запоминаем текущий номер как предыдущий для следующего соединения
+                previousNumber = number;
+            }
+        }
+
+        function createConnectionLine(fromNumber, toNumber) {
+            const fromElement = document.querySelector(`.number-${fromNumber}`);
+            const toElement = document.querySelector(`.number-${toNumber}`);
+            
+            if (!fromElement || !toElement) return;
+            
+            // Получаем координаты элементов относительно контейнера карты
+            const mapContainer = document.querySelector('.map-container');
+            const containerRect = mapContainer.getBoundingClientRect();
+            
+            const fromRect = fromElement.getBoundingClientRect();
+            const toRect = toElement.getBoundingClientRect();
+            
+            // Получаем масштаб из трансформации body
+            const bodyScale = 0.9; // должен совпадать с scale в CSS
+            
+            // Вычисляем центры элементов относительно контейнера карты с учетом масштаба
+            const fromX = (fromRect.left + fromRect.width / 2 - containerRect.left) / bodyScale;
+            const fromY = (fromRect.top + fromRect.height / 2 - containerRect.top) / bodyScale;
+            const toX = (toRect.left + toRect.width / 2 - containerRect.left) / bodyScale;
+            const toY = (toRect.top + toRect.height / 2 - containerRect.top) / bodyScale;
+            
+            // Вычисляем расстояние и угол
+            const distance = Math.sqrt(Math.pow(toX - fromX, 2) + Math.pow(toY - fromY, 2));
+            const angle = Math.atan2(toY - fromY, toX - fromX) * 180 / Math.PI;
+            
+            // Создаем линию (укороченную на 20px с каждой стороны)
+            const line = document.createElement('div');
+            line.className = 'connection-line';
+            line.style.width = `${distance - 40}px`;
+            line.style.left = `${fromX + 20 * Math.cos(angle * Math.PI / 180)}px`;
+            line.style.top = `${fromY + 20 * Math.sin(angle * Math.PI / 180)}px`;
+            line.style.transform = `rotate(${angle}deg)`;
+            
+            mapContainer.appendChild(line);
+            connectionLines.push(line);
+        }
+        function playAudio(number) {
+            if (currentAudio) {
+                currentAudio.pause();
+                currentAudio.currentTime = 0;
+            }
+            
+            currentAudio = new Audio(`assets/audio/${number}.mp3`);
+            
+            currentAudio.addEventListener('ended', function() {
+                currentAudio = null;
+                document.querySelectorAll('.map-number').forEach(el => {
+                    el.classList.remove('active');
+                });
+            });
+            
+            currentAudio.play().catch(function(error) {
+                console.error('Ошибка воспроизведения:', error);
+                currentAudio = null;
+            });
+        }
+
+        function stopAudio() {
+            if (currentAudio) {
+                currentAudio.pause();
+                currentAudio.currentTime = 0;
+                currentAudio = null;
+            }
+        }
+
+        function navigateToAudioPage(number) {
+            window.location.href = `audio-${number}.html`;
+        }
+
+        // Очистка при загрузке страницы
+        window.addEventListener('load', function() {
+            // Удаляем все существующие линии
+            connectionLines.forEach(line => {
+                if (line.parentNode) {
+                    line.parentNode.removeChild(line);
+                }
+            });
+            connectionLines = [];
+            previousNumber = null;
+            
+            // Снимаем все выделения
+            document.querySelectorAll('.map-number').forEach(el => {
+                el.classList.remove('active');
+            });
+        });
+    </script>
+</body>
+</html>
