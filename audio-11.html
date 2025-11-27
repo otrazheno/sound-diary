@@ -899,6 +899,8 @@
                 trackElement.style.left = (track.x / 3000 * 100) + '%';
                 trackElement.style.top = (track.y / 2000 * 100) + '%';
                 trackElement.style.fontSize = (track.size / 100) + 'rem';
+
+                trackElement.setAttribute('data-preview-url', track.previewUrl);
                 
                 // Обработчик клика
                 trackElement.addEventListener('click', () => handleTrackClick(track, trackElement));
@@ -910,9 +912,9 @@
             drawTrackConnections();
         }
 
+         // ЗАМЕНИТЕ старую функцию handleTrackClick на эту:
         function handleTrackClick(track, trackElement) {
-        // Воспроизводим трек
-            playTrack(track);
+            loadAndPlayTrack(track, trackElement);
             
             // Если это не первый выбранный трек, создаем связь с предыдущим
             if (selectedTracks.length > 0) {
@@ -926,7 +928,45 @@
             // Визуально выделяем выбранный трек
             trackElement.classList.add('selected');
         }
-        
+
+                // ДОБАВЬТЕ ЭТУ ФУНКЦИЮ ПОСЛЕ функции handleTrackClick:
+        function loadAndPlayTrack(track, trackElement) {
+            if (nowplaying === track.name) {
+                // Если трек уже играет, останавливаем его
+                audioPlayer.pause();
+                nowplaying = '';
+                if (currentPlayingTrack) {
+                    currentPlayingTrack.classList.remove('playing');
+                }
+            } else {
+                // Останавливаем текущий трек
+                audioPlayer.pause();
+                if (currentPlayingTrack) {
+                    currentPlayingTrack.classList.remove('playing');
+                }
+                
+                // Загружаем и воспроизводим новый трек только при клике
+                audioPlayer.src = track.previewUrl;
+                audioPlayer.preload = 'none'; // Не загружать заранее
+                audioPlayer.load(); // Принудительно загружаем только сейчас
+                audioPlayer.play().catch(error => {
+                    console.log('Автовоспроизведение заблокировано:', error);
+                });
+                nowplaying = track.name;
+                
+                // Подсвечиваем текущий трек
+                trackElement.classList.add('playing');
+                currentPlayingTrack = trackElement;
+                
+                // Автоматически снимаем выделение после окончания трека
+                audioPlayer.onended = function() {
+                    nowplaying = '';
+                    if (currentPlayingTrack) {
+                        currentPlayingTrack.classList.remove('playing');
+                    }
+                };
+            }
+        }
         // Создание соединения между треками
         function createTrackConnection(track1, track2) {
             // Проверяем, нет ли уже такого соединения
@@ -1164,14 +1204,29 @@
             }
         });
 
-        // Инициализация при загрузке страницы
         window.addEventListener('load', function() {
             initCanvas();
             initMusicCanvas();
             
             // Добавляем обработчик для кнопки описаний
             document.getElementById('descriptionsToggle').addEventListener('click', toggleDescriptions);
+            
+            // ДОБАВЛЕНО: Предзагрузка только первых 2 треков для ускорения начальной загрузки
+            preloadFirstTracks(2);
         });
+
+        // ДОБАВЬТЕ ЭТУ ФУНКЦИЮ В КОНЕЦ СКРИПТА 
+        function preloadFirstTracks(count) {
+            for (let i = 0; i < Math.min(count, musicTracks.length); i++) {
+                const track = musicTracks[i];
+                // Предзагружаем только Spotify треки (они маленькие)
+                if (track.previewUrl.includes('p.scdn.co')) {
+                    const preloadAudio = new Audio();
+                    preloadAudio.src = track.previewUrl;
+                    preloadAudio.preload = 'metadata'; // Только метаданные, не весь файл
+                }
+            }
+        }
     </script>
     
 </body>

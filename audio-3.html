@@ -76,24 +76,8 @@
         }
 
         /* Стили для кнопки с глазом */
-        .nav-eye {
-            font-family: 'Literata', serif;
-            font-size: 1.5rem;
-            line-height: 2.25rem;
-            font-weight: 400;
-            color: #000000;
-            text-align: center;
-            flex: 1;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
 
-        .nav-eye:hover {
-            opacity: 0.7;
-        }
+        
 
         .nav-about {
             font-family: 'Literata', serif;
@@ -153,24 +137,8 @@
             z-index: 2;
         }
 
-        .text-note {
-            position: absolute;
-            background: transparent;
-            border: none;
-            font-family: 'Literata', serif;
-            font-size: 14px;
-            color: #000000;
-            resize: none;
-            outline: none;
-            z-index: 3;
-            cursor: move;
-            min-width: 100px;
-            min-height: 20px;
-        }
-
-        .text-note:focus {
-            cursor: text;
-        }
+       
+        
 
         /* === ВСПЛЫВАЮЩАЯ КНОПКА ОПИСАНИЙ === */
         .descriptions-popup {
@@ -651,31 +619,7 @@
                 </div>
             </div>
         </main>
-         <!-- { id: 'item1', name: 'Impossible Moments from Venice ', color: '#000000', x: 900, y: 800, size: 130, previewUrl: "https://p.scdn.co/mp3-preview/f519412bfe7dc6d27429ded14854b414ba116b2d", spotifyId: '65bCrk05TVfkPuJYzC9MzZ' }, //Natasha Barrett Impossible Moments from Venice 
-                { id: 'item2', name: 'Aquaculture 18:00', color: '#000000', x: 831, y: 2000, size: 180, previewUrl: 'https://p.scdn.co/mp3-preview/b3c3f55a6d0f547101c7a91c1cd17f40e62f7449', spotifyId: '24AJYq6020oRHs0SQ7S6rE' }, //title="e.g. Jana Winderen &quot;Aquaculture 18:00&quot;">
-                
-                { id: 'item3', name: 'Small Sand-stream On Beach', color: '#000000', x: 400, y: 300, size: 80, previewUrl: 'https://p.scdn.co/mp3-preview/120dc92994cee8a3451f4548b6165e95e2852b45', spotifyId: '12gShveX4cO8bHs99MPd56' }, // title="e.g. Toshiya Tsunoda &quot;Small Sand-stream On Beach
-                { id: 'item4', name: '2', color: '#000000', x: 600, y: 200, size: 75, previewUrl: 'https://p.scdn.co/mp3-preview/bec2eb3b0d8d2a05bf3aa7e9a8766157e2c03a83', spotifyId: '2ACuU3FoySNlkPXQM5LF7K' }, //title="e.g. Masayuki Imanishi &quot;2&quot
-                { id: 'item5', name: 'Room With Sky', color: '#000000', x: 300, y: 400, size: 70, previewUrl: 'https://p.scdn.co/mp3-preview/52ff5bb8a58d8691ee711885ffbc967d0e10b2b9', spotifyId: '5fU2kCzvkcXTMerGyLBFbC' }, //title="e.g. John Hudak &quot;Room With Sky&q
-                { id: 'item6', name: '4.39', color: '#000000', x: 500, y: 500, size: 85, previewUrl: 'https://p.scdn.co/mp3-preview/08b2de6da0eb39370f4140a596af739d9b7ce063', spotifyId: '6v0rgNYjZmcf9fYbejWUdd' }, // title="e.g. Kim Cascone "4'39""
-                
-                { id: 'item7', name: '4', color: '#000000', x: 2400, y: 1400, size: 65, previewUrl: 'https://p.scdn.co/mp3-preview/b3c3f55a6d0f547101c7a91c1cd17f40e62f7449', spotifyId: '00ldDETXdquJBt3uQWWAHx' }, // title "e.g. Erikm "Ressac 4""
-                { id: 'item8', name: 'we’ll come walking to find them', color: '#000000', x: 2600, y: 1500, size: 70, previewUrl: 'assets/1/04_María_Alejandra_Bulla_we’ll_come_walking_to_find_them,_future.mp3' }, 
-                { id: 'item9', name: 'Excerpt From Live Performance, Aug. 19, 2001, West Seattle, WA', color: '#000000', x: 2200, y: 1600, size: 60, previewUrl: 'https://p.scdn.co/mp3-preview/fb303790cb991ac8c0cb761bb1e6455e8d38ccd8', spotifyId: '58q4hWD1UgCF55x0xa8YVy' }, // title="e.g. Animist Orchestra "Excerpt From Live Performance, Aug. 19, 2001, West Seattle, WA""
-                
-                { id: 'item10', name: 'Whisperers. Church', color: '#000000', x: 1400, y: 1500, size: 85, previewUrl: 'https://p.scdn.co/mp3-preview/4c490cb8825b0eb1252bc6cad1cda8ca94681fa1', spotifyId: '5bTlTN8RzCtN43Z9iaRJTz' }, // title="e.g. Greta Hoheisel "Whisperers. Church""
-                { id: 'item11', name: 'The Narrow Street', color: '#000000', x: 1600, y: 1400, size: 75, previewUrl: 'https://p.scdn.co/mp3-preview/ee3dedef7c6f173456cdeb002d8f6a5c228236f1', spotifyId: '6UqnrOe0qE6fS6lYHMqIVR' }, // title="e.g. Lieven Martens Moana "O Caminho - The Narrow Street""
-                { id: 'item12', name: 'Albuquerque Hotel Room', color: '#000000', x: 1200, y: 1600, size: 70, previewUrl: 'https://p.scdn.co/mp3-preview/cfb0e0477a51c2bd97aea1fdbd26f451879a8a93', spotifyId: '3J6H6agNTZOD5jqxYef9w1' }, // title="e.g. Jeph Jerman "Albuquerque Hotel Room""
-                
-                { id: 'item13', name: '竹笛&', color: '#000000', x: 200, y: 1500, size: 65, previewUrl: 'https://p.scdn.co/mp3-preview/f177531abf0b1530e0b09a9f82c64b70ba32e5dc', spotifyId: '2vOoxcG9GogUdTbD5zv4m0' }, // title="e.g. 霊気 &quot;竹笛&quot;"
-                { id: 'item14', name: 'Untitled 1', color: '#000000', x: 2800, y: 300, size: 75, previewUrl: 'https://p.scdn.co/mp3-preview/186d9b5207fc55c69992bd1aa726f0a8901137de', spotifyId: '6zYzZOlwVJL4x6xEKYPgfS' }, // title="e.g. Roel Meelkop &quot;Untitled 1
-                { id: 'item15', name: 'Arrival', color: '#000000', x: 400, y: 1600, size: 80, previewUrl: 'https://p.scdn.co/mp3-preview/82d27c3f2d04a2121c19da3f66dcb3fe851d7db0', spotifyId: '0rShZy06fPsklk5ZN3NjvX' }, //e.g. Herbert Distel "Arrival""
-                { id: 'item16', name: 'Manhattan Sounds and Ambience, New York City', color: '#000000', x: 2600, y: 600, size: 70, previewUrl: 'https://p.scdn.co/mp3-preview/9659d999b5a0c6dcae477a9ab221cdbe148fc981', spotifyId: '52AGrErYdR5ObeZXcyCrPJ' }, // title="e.g. City Sounds for Sleeping "Manhattan Sounds and Ambience, New York City (feat. City Sounds Ambience)"
-                { id: 'item17', name: 'rhythm tappers, street walkers, song dancers', color: '#000000', x: 2800, y: 900, size: 65, previewUrl: 'assets/1/06_María_Alejandra_Bulla_rhythm_tappers,_street_walkers,_song_dancers.mp3' }, 
-                { id: 'item18', name: 'A Time Spent (Anja)', color: '#000000', x: 1800, y: 300, size: 70, previewUrl: 'assets/1/09 - Arin Aksberg - A Time Spent (Anja) [Nordic Patterns].mp3' }, 
-               
-            ]; -->
-        <!-- Всплывающая кнопка описаний -->
+      
 
                 
     <div class="descriptions-popup">
@@ -852,7 +796,9 @@
                 trackElement.style.color = track.color;
                 trackElement.style.left = (track.x / 3000 * 100) + '%';
                 trackElement.style.top = (track.y / 2000 * 100) + '%';
+                // После этой строки:
                 trackElement.style.fontSize = (track.size / 100) + 'rem';
+                trackElement.setAttribute('data-preview-url', track.previewUrl);
                 
                 // Обработчик клика
                 trackElement.addEventListener('click', () => handleTrackClick(track, trackElement));
@@ -864,21 +810,60 @@
             drawTrackConnections();
         }
 
+        // ЗАМЕНИТЕ старую функцию handleTrackClick на эту:
         function handleTrackClick(track, trackElement) {
-        // Воспроизводим трек
-            playTrack(track);
-            
-            // Если это не первый выбранный трек, создаем связь с предыдущим
+            loadAndPlayTrack(track, trackElement);
+    
+    // Если это не первый выбранный трек, создаем связь с предыдущим
             if (selectedTracks.length > 0) {
                 const previousTrack = selectedTracks[selectedTracks.length - 1];
                 createTrackConnection(previousTrack, track);
             }
-            
-            // Добавляем трек в список выбранных
+    
+    // Добавляем трек в список выбранных
             selectedTracks.push(track);
-            
-            // Визуально выделяем выбранный трек
+    
+    // Визуально выделяем выбранный трек
             trackElement.classList.add('selected');
+        }
+
+        // ДОБАВЬТЕ ЭТУ ФУНКЦИЮ ПОСЛЕ функции handleTrackClick:
+        function loadAndPlayTrack(track, trackElement) {
+            if (nowplaying === track.name) {
+                // Если трек уже играет, останавливаем его
+                audioPlayer.pause();
+                nowplaying = '';
+                if (currentPlayingTrack) {
+                    currentPlayingTrack.classList.remove('playing');
+                }
+            } else {
+                // Останавливаем текущий трек
+                audioPlayer.pause();
+                if (currentPlayingTrack) {
+                    currentPlayingTrack.classList.remove('playing');
+                }
+                
+                // Загружаем и воспроизводим новый трек только при клике
+                audioPlayer.src = track.previewUrl;
+                audioPlayer.preload = 'none'; // Не загружать заранее
+                audioPlayer.load(); // Принудительно загружаем только сейчас
+                audioPlayer.play().catch(error => {
+                    console.log('Автовоспроизведение заблокировано:', error);
+                });
+                nowplaying = track.name;
+                
+                // Подсвечиваем текущий трек
+                trackElement.classList.add('playing');
+                currentPlayingTrack = trackElement;
+                
+                // Автоматически снимаем выделение после окончания трека
+                audioPlayer.onended = function() {
+                    nowplaying = '';
+                    if (currentPlayingTrack) {
+                        currentPlayingTrack.classList.remove('playing');
+                    }
+                };
+            }
         }
         
         // Создание соединения между треками
@@ -1118,14 +1103,32 @@
             }
         });
 
-        // Инициализация при загрузке страницы
+        
+
+        // НА ЭТУ:
         window.addEventListener('load', function() {
             initCanvas();
             initMusicCanvas();
             
             // Добавляем обработчик для кнопки описаний
             document.getElementById('descriptionsToggle').addEventListener('click', toggleDescriptions);
+            
+            // ДОБАВЛЕНО: Предзагрузка только первых 2 треков для ускорения начальной загрузки
+            preloadFirstTracks(2);
         });
+
+        // ДОБАВЬТЕ ЭТУ ФУНКЦИЮ В КОНЕЦ СКРИПТА 
+        function preloadFirstTracks(count) {
+            for (let i = 0; i < Math.min(count, musicTracks.length); i++) {
+                const track = musicTracks[i];
+                // Предзагружаем только Spotify треки (они маленькие)
+                if (track.previewUrl.includes('p.scdn.co')) {
+                    const preloadAudio = new Audio();
+                    preloadAudio.src = track.previewUrl;
+                    preloadAudio.preload = 'metadata'; // Только метаданные, не весь файл
+                }
+            }
+        }
     </script>
     
 </body>

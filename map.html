@@ -726,35 +726,30 @@
 
     <script>
         function navigateToPage(page) {
+    // СБРАСЫВАЕМ состояние навигации при уходе с карты
+            resetNavigationState();
             window.location.href = page;
         }
 
-                        // Перерисовка линий при изменении размера окна
+        
+        // ЗАМЕНИТЕ текущий обработчик resize на этот:
         window.addEventListener('resize', function() {
             // Сохраняем текущие соединения
-            const currentConnections = [];
-            let tempPrevious = previousNumber;
-            let tempCurrent = null;
+            const savedConnections = localStorage.getItem('mapConnections');
             
-            // Восстанавливаем соединения на основе previousNumber
-            if (previousNumber !== null) {
-                // Очищаем линии
-                connectionLines.forEach(line => {
-                    if (line.parentNode) {
-                        line.parentNode.removeChild(line);
-                    }
-                });
-                connectionLines = [];
-                
-                // Восстанавливаем соединения
-                document.querySelectorAll('.map-number').forEach(el => {
-                    if (el.classList.contains('active')) {
-                        tempCurrent = parseInt(el.textContent);
-                        if (tempPrevious && tempCurrent && tempPrevious !== tempCurrent) {
-                            createConnectionLine(tempPrevious, tempCurrent);
-                            tempPrevious = tempCurrent;
-                        }
-                    }
+            // Очищаем все линии
+            connectionLines.forEach(line => {
+                if (line.parentNode) {
+                    line.parentNode.removeChild(line);
+                }
+            });
+            connectionLines = [];
+            
+            // Восстанавливаем соединения из localStorage
+            if (savedConnections) {
+                const connections = JSON.parse(savedConnections);
+                connections.forEach(conn => {
+                    createConnectionLine(parseInt(conn.from), parseInt(conn.to));
                 });
             }
         });
@@ -789,8 +784,11 @@
                 }, 2000);
             } else if (clickCount[number] === 2) {
                 stopAudio();
+                // СОХРАНЯЕМ состояние перед переходом
+                saveNavigationState();
                 navigateToAudioPage(number);
                 clickCount[number] = 0;
+                return; // Прерываем выполнение, так как уходим со страницы
             }
 
             // Логика соединения треков линиями
@@ -809,8 +807,10 @@
                 // Запоминаем текущий номер как предыдущий для следующего соединения
                 previousNumber = number;
             }
+            
+            // СОХРАНЯЕМ состояние навигации
+            saveNavigationState();
         }
-
         function createConnectionLine(fromNumber, toNumber) {
             const fromElement = document.querySelector(`.number-${fromNumber}`);
             const toElement = document.querySelector(`.number-${toNumber}`);
@@ -844,9 +844,14 @@
             line.style.left = `${fromX + 20 * Math.cos(angle * Math.PI / 180)}px`;
             line.style.top = `${fromY + 20 * Math.sin(angle * Math.PI / 180)}px`;
             line.style.transform = `rotate(${angle}deg)`;
+            line.dataset.from = fromNumber; // Сохраняем данные о соединении
+            line.dataset.to = toNumber;
             
             mapContainer.appendChild(line);
             connectionLines.push(line);
+            
+            // СОХРАНЯЕМ соединение в localStorage
+            saveConnections();
         }
         function playAudio(number) {
             if (currentAudio) {
@@ -854,7 +859,9 @@
                 currentAudio.currentTime = 0;
             }
             
+            // СОЗДАЕМ новый аудио элемент только при клике
             currentAudio = new Audio(`assets/audio/${number}.mp3`);
+            currentAudio.preload = 'none'; // Не загружать заранее
             
             currentAudio.addEventListener('ended', function() {
                 currentAudio = null;
@@ -863,10 +870,73 @@
                 });
             });
             
+            // Загружаем и воспроизводим только при клике
+            currentAudio.load();
             currentAudio.play().catch(function(error) {
                 console.error('Ошибка воспроизведения:', error);
                 currentAudio = null;
             });
+        }
+
+        // ДОБАВЬТЕ эти функции для работы с localStorage:
+
+        // ДОБАВЬТЕ эти функции:
+
+// Сохраняем состояние при уходе со страницы
+        function saveNavigationState() {
+            localStorage.setItem('mapPreviousNumber', previousNumber);
+        }
+
+        // Восстанавливаем состояние при загрузке страницы
+        function loadNavigationState() {
+            const savedPreviousNumber = localStorage.getItem('mapPreviousNumber');
+            if (savedPreviousNumber !== null && savedPreviousNumber !== "null") {
+                previousNumber = parseInt(savedPreviousNumber);
+            } else {
+                previousNumber = null;
+            }
+        }
+
+        // Сбрасываем состояние навигации (вызывается при переходе на другую страницу)
+        function resetNavigationState() {
+            previousNumber = null;
+            localStorage.setItem('mapPreviousNumber', null);
+        }
+
+        // Функция для сохранения соединений
+        function saveConnections() {
+            const connections = connectionLines.map(line => ({
+                from: line.dataset.from,
+                to: line.dataset.to
+            }));
+            localStorage.setItem('mapConnections', JSON.stringify(connections));
+        }
+
+        // Функция для загрузки соединений
+        function loadConnections() {
+            const savedConnections = localStorage.getItem('mapConnections');
+            if (savedConnections) {
+                const connections = JSON.parse(savedConnections);
+                connections.forEach(conn => {
+                    createConnectionLine(parseInt(conn.from), parseInt(conn.to));
+                });
+            }
+        }
+
+        // Функция для очистки соединений при перезагрузке
+        function clearConnectionsOnReload() {
+            // Проверяем, была ли страница перезагружена
+            const navigationEntries = performance.getEntriesByType('navigation');
+            if (navigationEntries.length > 0 && navigationEntries[0].type === 'reload') {
+                localStorage.removeItem('mapConnections');
+                connectionLines.forEach(line => {
+                    if (line.parentNode) {
+                        line.parentNode.removeChild(line);
+                    }
+                });
+                connectionLines = [];
+                previousNumber = null;
+            }
         }
 
         function stopAudio() {
@@ -878,24 +948,36 @@
         }
 
         function navigateToAudioPage(number) {
+    // Сохраняем текущее состояние перед переходом
+            saveNavigationState();
             window.location.href = `audio-${number}.html`;
         }
-
         // Очистка при загрузке страницы
-        window.addEventListener('load', function() {
-            // Удаляем все существующие линии
-            connectionLines.forEach(line => {
-                if (line.parentNode) {
-                    line.parentNode.removeChild(line);
-                }
-            });
-            connectionLines = [];
-            previousNumber = null;
+       window.addEventListener('load', function() {
+            // Проверяем перезагрузку и очищаем линии если нужно
+            clearConnectionsOnReload();
+            
+            // Загружаем сохраненные соединения
+            loadConnections();
+            
+            // ВОССТАНАВЛИВАЕМ состояние навигации
+            loadNavigationState();
             
             // Снимаем все выделения
             document.querySelectorAll('.map-number').forEach(el => {
                 el.classList.remove('active');
             });
+        });
+
+        // ДОБАВЬТЕ этот обработчик в конец скрипта:
+        // Сохраняем состояние при обновлении страницы
+        window.addEventListener('beforeunload', function() {
+            saveNavigationState();
+        });
+
+        // Сбрасываем навигационное состояние при переходе на главную страницу
+        document.querySelector('.nav-back').addEventListener('click', function() {
+            resetNavigationState();
         });
     </script>
 </body>

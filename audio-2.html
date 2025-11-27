@@ -73,26 +73,6 @@
             opacity: 0.7;
         }
 
-        /* Стили для кнопки с глазом */
-        .nav-eye {
-            font-family: 'Literata', serif;
-            font-size: 1.5rem;
-            line-height: 2.25rem;
-            font-weight: 400;
-            color: #000000;
-            text-align: center;
-            flex: 1;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-
-        .nav-eye:hover {
-            opacity: 0.7;
-        }
-
         .nav-about {
             font-family: 'Literata', serif;
             font-size: 0.8rem;
@@ -149,25 +129,6 @@
             height: 100%;
             cursor: crosshair;
             z-index: 2;
-        }
-
-        .text-note {
-            position: absolute;
-            background: transparent;
-            border: none;
-            font-family: 'Literata', serif;
-            font-size: 14px;
-            color: #000000;
-            resize: none;
-            outline: none;
-            z-index: 3;
-            cursor: move;
-            min-width: 100px;
-            min-height: 20px;
-        }
-
-        .text-note:focus {
-            cursor: text;
         }
 
         /* === ВСПЛЫВАЮЩАЯ КНОПКА ОПИСАНИЙ === */
@@ -650,25 +611,6 @@
                 </div>
             </div>
         </main>
-         <!--             musicTracks = [
- 
-                { id: 'item10', name: 'The Waves, Escape, and Relax with This Feeling', color: '#000000', x: 300, y: 1600, size: 65, previewUrl: 'https://p.scdn.co/mp3-preview/1ef353a676e073f51e9606eef4447e472e8ca005', spotifyId: '6T6Idnzi7S5J8YM8uA2wiK' }, // title="e.g. Sleeping Waves Falls Lullaby "The Waves, Escape, and Relax with This Feeling"
-                
-                { id: 'item11', name: 'Empty Beach', color: '#000000', x: 2400, y: 1500, size: 68, previewUrl: 'https://p.scdn.co/mp3-preview/8c8d5e3589bc075858196799e24280c61ecbe0c4', spotifyId: '3CwAf6F0wwS7sMSk4sDb69' }, // Serenity of Sound "Empty Beach""
-                { id: 'item12', name: 'White Noise', color: '#000000', x: 2600, y: 1400, size: 72, previewUrl: 'assets/2/Sounds_of_Nature_White_Noise_for_Mindfulness_Meditation_and_Rela.mp3' }, 
-                { id: 'item13', name: 'South American Jungle Ambience ', color: '#000000', x: 1200, y: 400, size: 64, previewUrl: "https://p.scdn.co/mp3-preview/d9224731a7fd61dcbd996de36dd7551ab6c0f643", spotifyId: '62UzU328BY9sOluH2yTMQR' }, // e.g. Nature Soundscape "South American Jungle Ambience""
-               
-                { id: 'item14', name: 'Brook in the Jungle, Borneo ', color: '#000000',x: 2100, y: 800, size: 160, previewUrl: 'assets/2/Takashi Kokubo - Brook in the Jungle, Borneo.mp3' }, 
-                { id: 'item15', name: 'Rainforest Soloist ', color: '#000000', x: 1400, y: 1600, size: 62, previewUrl: 'assets/2/Takashi Kokubo - Rainforest Soloist.mp3' }, 
-  
-                { id: 'item16', name: 'Shiny Sand', color: '#000000', x: 500, y: 50, size: 66, previewUrl: 'assets/2/Takashi Kokubo - Shiny Sand.mp3' }, 
-                { id: 'item17', name: 'Spring Brook', color: '#000000', x: 2300, y: 350, size: 64, previewUrl: 'assets/2/Takashi Kokubo - Spring Brook.mp3' }, 
-                { id: 'item18', name: 'Garten I [Underwater Cairngorms]', color: '#000000', x: 1800, y: 500, size: 67, previewUrl: 'assets/2/01 - David de la Haye - Garten I [Underwater Cairngorms].mp3' }, 
-           ];
-            ]; -->
-
-
-
                         <!-- Всплывающая кнопка описаний -->
         <div class="descriptions-popup">
             <div class="descriptions-toggle" id="descriptionsToggle" title="Описания работ">
@@ -776,13 +718,7 @@
                                     </div>
                                 </div>
 
-                                <!-- <div class="description-item">
-                                    <div class="description-number">11</div>
-                                    <div class="description-content">
-                                        <div class="description-title">Spring Brook</div>
-                                        <div class="description-details">2023<br>Takashi Kokubo</div>
-                                    </div>
-                                </div> -->
+                              
                                 <div class="description-item">
                                     <div class="description-number">10</div>
                                     <div class="description-content">
@@ -885,7 +821,7 @@
             drawTrackConnections();
         }
 
- // Загрузка музыкальных треков
+        // Загрузка музыкальных треков
         function loadMusicTracks() {
             // Данные треков из второго сайта
             musicTracks = [
@@ -917,8 +853,6 @@
             drawMusicTracks();
         }
 
-       
-
         // Отрисовка музыкальных треков
         function drawMusicTracks() {
             // Очищаем canvas
@@ -942,6 +876,9 @@
                 trackElement.style.top = (track.y / 2000 * 100) + '%';
                 trackElement.style.fontSize = (track.size / 100) + 'rem';
                 
+                // ДОБАВЛЕНО: Lazy loading для аудио
+                trackElement.setAttribute('data-preview-url', track.previewUrl);
+                
                 // Обработчик клика
                 trackElement.addEventListener('click', () => handleTrackClick(track, trackElement));
                 
@@ -952,9 +889,9 @@
             drawTrackConnections();
         }
 
+        // ИЗМЕНЕНО: Функция для загрузки и воспроизведения трека по требованию
         function handleTrackClick(track, trackElement) {
-        // Воспроизводим трек
-            playTrack(track);
+            loadAndPlayTrack(track, trackElement);
             
             // Если это не первый выбранный трек, создаем связь с предыдущим
             if (selectedTracks.length > 0) {
@@ -969,6 +906,45 @@
             trackElement.classList.add('selected');
         }
         
+        // ДОБАВЛЕНО: Функция для загрузки и воспроизведения трека по требованию
+        function loadAndPlayTrack(track, trackElement) {
+            if (nowplaying === track.name) {
+                // Если трек уже играет, останавливаем его
+                audioPlayer.pause();
+                nowplaying = '';
+                if (currentPlayingTrack) {
+                    currentPlayingTrack.classList.remove('playing');
+                }
+            } else {
+                // Останавливаем текущий трек
+                audioPlayer.pause();
+                if (currentPlayingTrack) {
+                    currentPlayingTrack.classList.remove('playing');
+                }
+                
+                // Загружаем и воспроизводим новый трек только при клике
+                audioPlayer.src = track.previewUrl;
+                audioPlayer.preload = 'none'; // Не загружать заранее
+                audioPlayer.load(); // Принудительно загружаем только сейчас
+                audioPlayer.play().catch(error => {
+                    console.log('Автовоспроизведение заблокировано:', error);
+                });
+                nowplaying = track.name;
+                
+                // Подсвечиваем текущий трек
+                trackElement.classList.add('playing');
+                currentPlayingTrack = trackElement;
+                
+                // Автоматически снимаем выделение после окончания трека
+                audioPlayer.onended = function() {
+                    nowplaying = '';
+                    if (currentPlayingTrack) {
+                        currentPlayingTrack.classList.remove('playing');
+                    }
+                };
+            }
+        }
+
         // Создание соединения между треками
         function createTrackConnection(track1, track2) {
             // Проверяем, нет ли уже такого соединения
@@ -1032,44 +1008,6 @@
             });
         }
 
-        // Воспроизведение трека
-        function playTrack(track) {
-            if (nowplaying === track.name) {
-                // Если трек уже играет, останавливаем его
-                audioPlayer.pause();
-                nowplaying = '';
-                if (currentPlayingTrack) {
-                    currentPlayingTrack.classList.remove('playing');
-                }
-            } else {
-                // Останавливаем текущий трек
-                audioPlayer.pause();
-                if (currentPlayingTrack) {
-                    currentPlayingTrack.classList.remove('playing');
-                }
-                
-                // Воспроизводим новый трек
-                audioPlayer.src = track.previewUrl;
-                audioPlayer.play();
-                nowplaying = track.name;
-                
-                // Подсвечиваем текущий трек
-                const trackElement = document.getElementById(track.id);
-                if (trackElement) {
-                    trackElement.classList.add('playing');
-                    currentPlayingTrack = trackElement;
-                }
-                
-                // Автоматически снимаем выделение после окончания трека
-                audioPlayer.onended = function() {
-                    nowplaying = '';
-                    if (currentPlayingTrack) {
-                        currentPlayingTrack.classList.remove('playing');
-                    }
-                };
-            }
-        }
-
         // Функция очистки всех связей
         function clearAllConnections() {
             trackConnections = [];
@@ -1080,7 +1018,6 @@
             document.querySelectorAll('.music-track.selected').forEach(track => {
                 track.classList.remove('selected');
             });
-            
         }
 
         // Установка инструмента
@@ -1167,18 +1104,7 @@
 
         // Переключение изображения с анимацией глаза
         function toggleImage() {
-            const image = document.getElementById('hiddenImage');
-            const eyeButton = document.getElementById('imageToggle');
             
-            if (image.style.display === 'none') {
-                image.style.display = 'block';
-                eyeButton.textContent = '⚆'; // Открытый глаз
-                isEyeOpen = true;
-            } else {
-                image.style.display = 'none';
-                eyeButton.textContent = '◠'; // Закрытый глаз
-                isEyeOpen = false;
-            }
         }
 
         // Навигация
@@ -1213,7 +1139,23 @@
             
             // Добавляем обработчик для кнопки описаний
             document.getElementById('descriptionsToggle').addEventListener('click', toggleDescriptions);
+            
+            // ДОБАВЛЕНО: Предзагрузка только первых 2 треков для ускорения начальной загрузки
+            preloadFirstTracks(2);
         });
+
+        // ДОБАВЛЕНО: Функция для предзагрузки только первых N треков
+        function preloadFirstTracks(count) {
+            for (let i = 0; i < Math.min(count, musicTracks.length); i++) {
+                const track = musicTracks[i];
+                // Предзагружаем только Spotify треки (они маленькие)
+                if (track.previewUrl.includes('p.scdn.co')) {
+                    const preloadAudio = new Audio();
+                    preloadAudio.src = track.previewUrl;
+                    preloadAudio.preload = 'metadata'; // Только метаданные, не весь файл
+                }
+            }
+        }
     </script>
     
 </body>

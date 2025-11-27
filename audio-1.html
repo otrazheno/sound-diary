@@ -73,25 +73,6 @@
             opacity: 0.7;
         }
 
-        /* Стили для кнопки с глазом */
-        .nav-eye {
-            font-family: 'Literata', serif;
-            font-size: 1.5rem;
-            line-height: 2.25rem;
-            font-weight: 400;
-            color: #000000;
-            text-align: center;
-            flex: 1;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-
-        .nav-eye:hover {
-            opacity: 0.7;
-        }
 
         .nav-about {
             font-family: 'Literata', serif;
@@ -151,24 +132,7 @@
             z-index: 2;
         }
 
-        .text-note {
-            position: absolute;
-            background: transparent;
-            border: none;
-            font-family: 'Literata', serif;
-            font-size: 14px;
-            color: #000000;
-            resize: none;
-            outline: none;
-            z-index: 3;
-            cursor: move;
-            min-width: 100px;
-            min-height: 20px;
-        }
 
-        .text-note:focus {
-            cursor: text;
-        }
 
         /* === ВСПЛЫВАЮЩАЯ КНОПКА ОПИСАНИЙ === */
         .descriptions-popup {
@@ -965,6 +929,9 @@
                 trackElement.style.top = (track.y / 2000 * 100) + '%';
                 trackElement.style.fontSize = (track.size / 100) + 'rem';
                 
+                // Добавляем lazy loading для аудио
+                trackElement.setAttribute('data-preview-url', track.previewUrl);
+                
                 // Обработчик клика
                 trackElement.addEventListener('click', () => handleTrackClick(track, trackElement));
                 
@@ -976,8 +943,8 @@
         }
 
         function handleTrackClick(track, trackElement) {
-        // Воспроизводим трек
-            playTrack(track);
+            // Загружаем и воспроизводим трек только по требованию
+            loadAndPlayTrack(track, trackElement);
             
             // Если это не первый выбранный трек, создаем связь с предыдущим
             if (selectedTracks.length > 0) {
@@ -992,6 +959,45 @@
             trackElement.classList.add('selected');
         }
         
+        // Функция для загрузки и воспроизведения трека по требованию
+        function loadAndPlayTrack(track, trackElement) {
+            if (nowplaying === track.name) {
+                // Если трек уже играет, останавливаем его
+                audioPlayer.pause();
+                nowplaying = '';
+                if (currentPlayingTrack) {
+                    currentPlayingTrack.classList.remove('playing');
+                }
+            } else {
+                // Останавливаем текущий трек
+                audioPlayer.pause();
+                if (currentPlayingTrack) {
+                    currentPlayingTrack.classList.remove('playing');
+                }
+                
+                // Загружаем и воспроизводим новый трек только при клике
+                audioPlayer.src = track.previewUrl;
+                audioPlayer.preload = 'none'; // Не загружать заранее
+                audioPlayer.load(); // Принудительно загружаем только сейчас
+                audioPlayer.play().catch(error => {
+                    console.log('Автовоспроизведение заблокировано:', error);
+                });
+                nowplaying = track.name;
+                
+                // Подсвечиваем текущий трек
+                trackElement.classList.add('playing');
+                currentPlayingTrack = trackElement;
+                
+                // Автоматически снимаем выделение после окончания трека
+                audioPlayer.onended = function() {
+                    nowplaying = '';
+                    if (currentPlayingTrack) {
+                        currentPlayingTrack.classList.remove('playing');
+                    }
+                };
+            }
+        }
+
         // Создание соединения между треками
         function createTrackConnection(track1, track2) {
             // Проверяем, нет ли уже такого соединения
@@ -1055,44 +1061,6 @@
             });
         }
 
-        // Воспроизведение трека
-        function playTrack(track) {
-            if (nowplaying === track.name) {
-                // Если трек уже играет, останавливаем его
-                audioPlayer.pause();
-                nowplaying = '';
-                if (currentPlayingTrack) {
-                    currentPlayingTrack.classList.remove('playing');
-                }
-            } else {
-                // Останавливаем текущий трек
-                audioPlayer.pause();
-                if (currentPlayingTrack) {
-                    currentPlayingTrack.classList.remove('playing');
-                }
-                
-                // Воспроизводим новый трек
-                audioPlayer.src = track.previewUrl;
-                audioPlayer.play();
-                nowplaying = track.name;
-                
-                // Подсвечиваем текущий трек
-                const trackElement = document.getElementById(track.id);
-                if (trackElement) {
-                    trackElement.classList.add('playing');
-                    currentPlayingTrack = trackElement;
-                }
-                
-                // Автоматически снимаем выделение после окончания трека
-                audioPlayer.onended = function() {
-                    nowplaying = '';
-                    if (currentPlayingTrack) {
-                        currentPlayingTrack.classList.remove('playing');
-                    }
-                };
-            }
-        }
-
         // Функция очистки всех связей
         function clearAllConnections() {
             trackConnections = [];
@@ -1103,7 +1071,6 @@
             document.querySelectorAll('.music-track.selected').forEach(track => {
                 track.classList.remove('selected');
             });
-            
         }
 
         // Установка инструмента
@@ -1236,9 +1203,23 @@
             
             // Добавляем обработчик для кнопки описаний
             document.getElementById('descriptionsToggle').addEventListener('click', toggleDescriptions);
+            
+            // Предзагрузка только первых 2 треков для ускорения начальной загрузки
+            preloadFirstTracks(2);
         });
 
-
+        // Функция для предзагрузки только первых N треков
+        function preloadFirstTracks(count) {
+            for (let i = 0; i < Math.min(count, musicTracks.length); i++) {
+                const track = musicTracks[i];
+                // Предзагружаем только Spotify треки (они маленькие)
+                if (track.previewUrl.includes('p.scdn.co')) {
+                    const preloadAudio = new Audio();
+                    preloadAudio.src = track.previewUrl;
+                    preloadAudio.preload = 'metadata'; // Только метаданные, не весь файл
+                }
+            }
+        }
         
     </script>
     
