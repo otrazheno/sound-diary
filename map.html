@@ -726,184 +726,124 @@
 
     <script>
         function navigateToPage(page) {
-    // СБРАСЫВАЕМ состояние навигации при уходе с карты
-            resetNavigationState();
+            if (page === 'index.html') {
+                resetNavigationState();
+            }
             window.location.href = page;
         }
 
-        
-        // ЗАМЕНИТЕ текущий обработчик resize на этот:
-        window.addEventListener('resize', function() {
-            // Сохраняем текущие соединения
-            const savedConnections = localStorage.getItem('mapConnections');
-            
-            // Очищаем все линии
-            connectionLines.forEach(line => {
-                if (line.parentNode) {
-                    line.parentNode.removeChild(line);
-                }
-            });
-            connectionLines = [];
-            
-            // Восстанавливаем соединения из localStorage
-            if (savedConnections) {
-                const connections = JSON.parse(savedConnections);
-                connections.forEach(conn => {
-                    createConnectionLine(parseInt(conn.from), parseInt(conn.to));
-                });
-            }
-        });
-
-        // Переменные для логики соединения треков
+        // Оптимизированные переменные
         let currentAudio = null;
-        let activeNumber = null;
         let clickCount = {};
         let previousNumber = null;
         let connectionLines = [];
 
+        // Кэшированные DOM элементы
+        const mapNumbers = document.querySelectorAll('.map-number');
+        const mapContainer = document.querySelector('.map-container');
+
         function handleNumberClick(number) {
-            // Обработка кликов для аудио
-            if (!clickCount[number]) {
-                clickCount[number] = 0;
-            }
+            if (!clickCount[number]) clickCount[number] = 0;
             clickCount[number]++;
             
-            document.querySelectorAll('.map-number').forEach(el => {
-                el.classList.remove('active');
-            });
-            
-            const currentElement = document.querySelector(`.number-${number}`);
-            currentElement.classList.add('active');
+            mapNumbers.forEach(el => el.classList.remove('active'));
+            event.currentTarget.classList.add('active');
             
             if (clickCount[number] === 1) {
                 playAudio(number);
-                setTimeout(() => {
-                    if (clickCount[number] === 1) {
-                        clickCount[number] = 0;
-                    }
-                }, 2000);
+                setTimeout(() => { if (clickCount[number] === 1) clickCount[number] = 0; }, 2000);
             } else if (clickCount[number] === 2) {
                 stopAudio();
-                // СОХРАНЯЕМ состояние перед переходом
                 saveNavigationState();
                 navigateToAudioPage(number);
                 clickCount[number] = 0;
-                return; // Прерываем выполнение, так как уходим со страницы
+                return;
             }
 
-            // Логика соединения треков линиями
             if (previousNumber === null) {
-                // Первый клик - просто запоминаем номер
                 previousNumber = number;
             } else {
-                // Второй и последующие клики - создаем линию
                 createConnectionLine(previousNumber, number);
-                
-                // Снимаем выделения
-                document.querySelectorAll('.map-number').forEach(el => {
-                    el.classList.remove('active');
-                });
-                
-                // Запоминаем текущий номер как предыдущий для следующего соединения
+                mapNumbers.forEach(el => el.classList.remove('active'));
                 previousNumber = number;
             }
             
-            // СОХРАНЯЕМ состояние навигации
             saveNavigationState();
         }
+
         function createConnectionLine(fromNumber, toNumber) {
             const fromElement = document.querySelector(`.number-${fromNumber}`);
             const toElement = document.querySelector(`.number-${toNumber}`);
-            
             if (!fromElement || !toElement) return;
             
-            // Получаем координаты элементов относительно контейнера карты
-            const mapContainer = document.querySelector('.map-container');
             const containerRect = mapContainer.getBoundingClientRect();
-            
             const fromRect = fromElement.getBoundingClientRect();
             const toRect = toElement.getBoundingClientRect();
             
-            // Получаем масштаб из трансформации body
-            const bodyScale = 0.9; // должен совпадать с scale в CSS
+            const fromX = (fromRect.left + fromRect.width / 2 - containerRect.left) / 0.9;
+            const fromY = (fromRect.top + fromRect.height / 2 - containerRect.top) / 0.9;
+            const toX = (toRect.left + toRect.width / 2 - containerRect.left) / 0.9;
+            const toY = (toRect.top + toRect.height / 2 - containerRect.top) / 0.9;
             
-            // Вычисляем центры элементов относительно контейнера карты с учетом масштаба
-            const fromX = (fromRect.left + fromRect.width / 2 - containerRect.left) / bodyScale;
-            const fromY = (fromRect.top + fromRect.height / 2 - containerRect.top) / bodyScale;
-            const toX = (toRect.left + toRect.width / 2 - containerRect.left) / bodyScale;
-            const toY = (toRect.top + toRect.height / 2 - containerRect.top) / bodyScale;
+            const dx = toX - fromX;
+            const dy = toY - fromY;
+            const distance = Math.sqrt(dx * dx + dy * dy);
+            const angle = Math.atan2(dy, dx) * 180 / Math.PI;
             
-            // Вычисляем расстояние и угол
-            const distance = Math.sqrt(Math.pow(toX - fromX, 2) + Math.pow(toY - fromY, 2));
-            const angle = Math.atan2(toY - fromY, toX - fromX) * 180 / Math.PI;
-            
-            // Создаем линию (укороченную на 20px с каждой стороны)
             const line = document.createElement('div');
             line.className = 'connection-line';
             line.style.width = `${distance - 40}px`;
             line.style.left = `${fromX + 20 * Math.cos(angle * Math.PI / 180)}px`;
             line.style.top = `${fromY + 20 * Math.sin(angle * Math.PI / 180)}px`;
             line.style.transform = `rotate(${angle}deg)`;
-            line.dataset.from = fromNumber; // Сохраняем данные о соединении
+            line.dataset.from = fromNumber;
             line.dataset.to = toNumber;
             
             mapContainer.appendChild(line);
             connectionLines.push(line);
-            
-            // СОХРАНЯЕМ соединение в localStorage
             saveConnections();
         }
+
         function playAudio(number) {
             if (currentAudio) {
                 currentAudio.pause();
                 currentAudio.currentTime = 0;
             }
             
-            // СОЗДАЕМ новый аудио элемент только при клике
             currentAudio = new Audio(`assets/audio/${number}.mp3`);
-            currentAudio.preload = 'none'; // Не загружать заранее
+            currentAudio.preload = 'none';
             
-            currentAudio.addEventListener('ended', function() {
+            currentAudio.addEventListener('ended', () => {
                 currentAudio = null;
-                document.querySelectorAll('.map-number').forEach(el => {
-                    el.classList.remove('active');
-                });
+                mapNumbers.forEach(el => el.classList.remove('active'));
             });
             
-            // Загружаем и воспроизводим только при клике
             currentAudio.load();
-            currentAudio.play().catch(function(error) {
+            currentAudio.play().catch(error => {
                 console.error('Ошибка воспроизведения:', error);
                 currentAudio = null;
             });
         }
 
-        // ДОБАВЬТЕ эти функции для работы с localStorage:
-
-        // ДОБАВЬТЕ эти функции:
-
-// Сохраняем состояние при уходе со страницы
         function saveNavigationState() {
             localStorage.setItem('mapPreviousNumber', previousNumber);
         }
 
-        // Восстанавливаем состояние при загрузке страницы
         function loadNavigationState() {
-            const savedPreviousNumber = localStorage.getItem('mapPreviousNumber');
-            if (savedPreviousNumber !== null && savedPreviousNumber !== "null") {
-                previousNumber = parseInt(savedPreviousNumber);
-            } else {
-                previousNumber = null;
-            }
+            const saved = localStorage.getItem('mapPreviousNumber');
+            previousNumber = (saved !== null && saved !== "null") ? parseInt(saved) : null;
         }
 
-        // Сбрасываем состояние навигации (вызывается при переходе на другую страницу)
         function resetNavigationState() {
             previousNumber = null;
-            localStorage.setItem('mapPreviousNumber', null);
+            clickCount = {};
+            connectionLines.forEach(line => line.remove());
+            connectionLines = [];
+            localStorage.removeItem('mapPreviousNumber');
+            localStorage.removeItem('mapConnections');
+            mapNumbers.forEach(el => el.classList.remove('active'));
         }
 
-        // Функция для сохранения соединений
         function saveConnections() {
             const connections = connectionLines.map(line => ({
                 from: line.dataset.from,
@@ -912,30 +852,19 @@
             localStorage.setItem('mapConnections', JSON.stringify(connections));
         }
 
-        // Функция для загрузки соединений
         function loadConnections() {
             const savedConnections = localStorage.getItem('mapConnections');
             if (savedConnections) {
-                const connections = JSON.parse(savedConnections);
-                connections.forEach(conn => {
+                JSON.parse(savedConnections).forEach(conn => {
                     createConnectionLine(parseInt(conn.from), parseInt(conn.to));
                 });
             }
         }
 
-        // Функция для очистки соединений при перезагрузке
         function clearConnectionsOnReload() {
-            // Проверяем, была ли страница перезагружена
-            const navigationEntries = performance.getEntriesByType('navigation');
-            if (navigationEntries.length > 0 && navigationEntries[0].type === 'reload') {
-                localStorage.removeItem('mapConnections');
-                connectionLines.forEach(line => {
-                    if (line.parentNode) {
-                        line.parentNode.removeChild(line);
-                    }
-                });
-                connectionLines = [];
-                previousNumber = null;
+            const navEntries = performance.getEntriesByType('navigation');
+            if (navEntries.length > 0 && navEntries[0].type === 'reload') {
+                resetNavigationState();
             }
         }
 
@@ -948,36 +877,41 @@
         }
 
         function navigateToAudioPage(number) {
-    // Сохраняем текущее состояние перед переходом
             saveNavigationState();
             window.location.href = `audio-${number}.html`;
         }
-        // Очистка при загрузке страницы
-       window.addEventListener('load', function() {
-            // Проверяем перезагрузку и очищаем линии если нужно
+
+        // Инициализация
+        document.addEventListener('DOMContentLoaded', function() {
             clearConnectionsOnReload();
-            
-            // Загружаем сохраненные соединения
             loadConnections();
-            
-            // ВОССТАНАВЛИВАЕМ состояние навигации
             loadNavigationState();
+            mapNumbers.forEach(el => el.classList.remove('active'));
             
-            // Снимаем все выделения
-            document.querySelectorAll('.map-number').forEach(el => {
-                el.classList.remove('active');
+            // Дебаунс для resize
+            let resizeTimeout;
+            window.addEventListener('resize', function() {
+                clearTimeout(resizeTimeout);
+                resizeTimeout = setTimeout(() => {
+                    const savedConnections = localStorage.getItem('mapConnections');
+                    connectionLines.forEach(line => line.remove());
+                    connectionLines = [];
+                    if (savedConnections) {
+                        JSON.parse(savedConnections).forEach(conn => {
+                            createConnectionLine(parseInt(conn.from), parseInt(conn.to));
+                        });
+                    }
+                }, 150);
             });
         });
 
-        // ДОБАВЬТЕ этот обработчик в конец скрипта:
-        // Сохраняем состояние при обновлении страницы
-        window.addEventListener('beforeunload', function() {
-            saveNavigationState();
-        });
-
-        // Сбрасываем навигационное состояние при переходе на главную страницу
+        // Обработчики
+        window.addEventListener('beforeunload', saveNavigationState);
         document.querySelector('.nav-back').addEventListener('click', function() {
             resetNavigationState();
+            setTimeout(() => {
+                window.location.href = 'index.html';
+            }, 50);
         });
     </script>
 </body>
